@@ -1,0 +1,44 @@
+subject :
+Assignment name: vbc
+Expected files: vbc.c
+Allowed functions: malloc, calloc, realloc, free, printf, isdigit, write
+
+Write a program that evaluates a mathematical expression provided as a command-line argument. The expression must contain only single-digit numbers (0–9), the addition operator (+), the multiplication operator (*), and parentheses (( and )) for grouping. There will be no whitespaces in the expression.
+
+Your program must correctly enforce operator precedence:
+
+    Parentheses have the highest priority.
+
+    Multiplication (*) is evaluated before addition (+).
+
+On successful evaluation, the program should output the result of the expression to standard output.
+
+Error Handling:
+
+    Unexpected Token:
+    If an unexpected character is encountered, print:
+
+Unexpected token '%c'
+
+(where %c is replaced by the offending character) and exit with status code 1.
+
+Unexpected End of Input:
+If the expression ends unexpectedly (for example, due to unmatched or missing parentheses), print:
+
+    Unexpected end of input
+
+    and exit with status code 1.
+
+    System Call Failures:
+    In the event of any system call (such as memory allocation or write failures) failing, the program should exit immediately with status code 1.
+
+Examples:
+
+$ ./vbc '(3+2)*4'
+20
+
+$ ./vbc '3+2*4'
+11
+
+$ ./vbc '((2+1)*3)+4*(2+(3+2))'
+37
