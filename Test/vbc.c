@@ -27,6 +27,7 @@ void unexpected(char c)
 		fprintf(stderr, "Unexpected token '%c'\n", c);
 	else
 		fprintf(stderr, "Unexpected end of input\n");
+	// exit(1);
 }
 
 int accept(char **s, char c)
@@ -71,27 +72,30 @@ int main(int argc, char **argv)
 	destroy_tree(tree);
 	return 0;
 }
+
 node *parse_highest(char **s)
 {
 	if (accept(s, '('))
 	{
 		node *left = parse_lowest(s);
+		if (!left)
+			return NULL;
 		if (!expect(s, ')'))
 		{
 			destroy_tree(left);
 			return NULL;
 		}
-		return left;
+		return left;		
 	}
 	else if (isdigit(**s))
 	{
 		int value = **s - '0';
 		(*s)++;
-		node tmp = {.type = VAL, .val = value, .l = NULL, .r = NULL};
+		node tmp = {.type = VAL, .val = value,  .l = NULL, .r = NULL};
 		node *left = new_node(tmp);
 		return left;
 	}
-	else
+	else 
 	{
 		unexpected(**s);
 		return NULL;
@@ -102,18 +106,17 @@ node *parse_middle(char **s)
 	node *left = parse_highest(s);
 	if (!left)
 		return NULL;
-	while (accept(s, '*'))
+	while(accept(s, '*'))
 	{
 		node *right = parse_highest(s);
 		if (!right)
 		{
-			destroy_tree(left);
+			destroy_tree(right);
 			return NULL;
 		}
-		node tmp = {.type = MULTI, .l = left, .r = right};
+		node tmp = {.type = MULTI, .l= left, .r = right};
 		left = new_node(tmp);
-		if (!left)
-			return NULL;
+		return left;
 	}
 	return left;
 }
@@ -122,7 +125,7 @@ node *parse_lowest(char **s)
 	node *left = parse_middle(s);
 	if (!left)
 		return NULL;
-	while (accept(s, '+'))
+	while(accept(s, '+'))
 	{
 		node *right = parse_middle(s);
 		if (!right)
@@ -130,10 +133,9 @@ node *parse_lowest(char **s)
 			destroy_tree(left);
 			return NULL;
 		}
-		node tmp = {.type = ADD, .l = left, .r = right};
+		node tmp = {.type = ADD, .l= left, .r = right};
 		left = new_node(tmp);
-		if (!left)
-			return NULL;
+		return left;
 	}
 	return left;
 }
@@ -143,7 +145,6 @@ node *parse_expr(char *s)
 	if (*s && ret != NULL)
 	{
 		unexpected(*s);
-		destroy_tree(ret);
 		return NULL;
 	}
 	return ret;
